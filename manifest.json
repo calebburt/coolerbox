@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "DCC Utils",
+  "version": "0.0.1",
+  "description": "Adds various improvements for websites used by DCC.",
+  "content_scripts": [
+    {
+        "js": ["scripts/coolerbox.js"],
+        "matches": [
+            "https://schoolbox.donvale.vic.edu.au/"
+        ]
+    },
+    {
+        "js": ["scripts/coolerbox_themes.js"],
+        "matches": [
+            "https://schoolbox.donvale.vic.edu.au/*"
+        ]
+    },
+    {
+        "js": ["scripts/coolermathspace.js"],
+        "matches": [
+            "https://mathspace.co/student/*"
+        ]
+    }
+  ]
+}
