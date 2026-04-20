@@ -151,6 +151,8 @@ function addStyle(head, css) {
         <select id="themeSelect">
             <option value="light">Light</option>
             <option value="dark">Dark</option>
+            <option value="blue">Blue (based off Mocha from Coolbox)</option>
+            <option value="banana">BANANA</option>
         </select>
         <button id="closeThemeDialog" style="position: absolute; top: 10px; right: 10px;">Close</button>
     </div>
