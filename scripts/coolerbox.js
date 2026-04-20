@@ -149,10 +149,26 @@ function addStyle(head, css) {
         <h2>Select a Theme</h2>
         <h3>Presets</h3>
         <select id="themeSelect">
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-            <option value="blue">Blue (based off Mocha from Coolbox)</option>
-            <option value="banana">BANANA</option>
+            <optgroup label="Default Themes">
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+                <option value="blue">Blue/Mocha</option>
+            </optgroup>
+            <optgroup label="Fun Themes">
+                <option value="banana">BANANA</option>
+                <option value="rainbow">Rainbow</option>
+            </optgroup>
+            <optgroup label="Color Themes">
+                <option value="ocean">Ocean</option>
+                <option value="forest">Forest</option>
+                <option value="neon">Neon</option>
+                <option value="pastel">Pastel</option>
+            </optgroup>
+            <optgroup label="Aesthetic Themes">
+                <option value="monochrome">Monochrome</option>
+                <option value="minimalist">Minimalist</option>
+                <option value="cyberpunk">Cyberpunk</option>
+            </optgroup>
         </select>
         <button id="closeThemeDialog" style="position: absolute; top: 10px; right: 10px;">Close</button>
     </div>
