@@ -7,20 +7,28 @@
     {
         "js": ["scripts/coolerbox.js"],
         "matches": [
-            "https://schoolbox.donvale.vic.edu.au/"
+            "*://schoolbox.donvale.vic.edu.au/"
         ]
     },
     {
-        "js": ["scripts/coolerbox_themes.js"],
+        "js": ["scripts/shared.js", "scripts/coolerbox_themes.js"],
         "matches": [
-            "https://schoolbox.donvale.vic.edu.au/*"
-        ]
+            "*://schoolbox.donvale.vic.edu.au/*"
+        ],
+        "run_at": "document_end"
     },
     {
         "js": ["scripts/coolermathspace.js"],
         "matches": [
-            "https://mathspace.co/student/*"
+            "*://*.mathspace.co/student/*"
         ]
+    },
+    {
+        "js": ["scripts/shared.js", "scripts/coolermathspace_themes.js"],
+        "matches": [
+            "*://*.mathspace.co/*"
+        ],
+        "run_at": "document_end"
     }
   ]
 }

@@ -1,9 +1,3 @@
-function addStyle(head, css) {
-    const style = document.createElement("style");
-    style.appendChild(document.createTextNode(css));
-    head.appendChild(style);
-}
-
     // try {
     //     let badThing = document.querySelector("#component163300");
     //     badThing.remove();
@@ -12,6 +6,8 @@ function addStyle(head, css) {
     // }
 
     let dragEnabled = false;
+    let draggedElement = null;
+    let layoutState = {};
 
     function enableDrag() {
         dragEnabled = true;
@@ -25,17 +21,67 @@ function addStyle(head, css) {
         document.body.classList.remove('noLinks');
     }
 
+    // Save layout to localStorage
+    function saveLayout() {
+        const layout = {};
+        const draggables = document.querySelectorAll('.component-container');
+        draggables.forEach(el => {
+            if (el.id) {
+                const parentZone = el.parentElement;
+                const zoneIndex = Array.from(document.querySelectorAll('.columns')).indexOf(parentZone);
+                layout[el.id] = {
+                    zone: zoneIndex,
+                    order: Array.from(parentZone.children).indexOf(el)
+                };
+            }
+        });
+        localStorage.coolerboxLayout = JSON.stringify(layout);
+    }
+
+    // Load layout from localStorage
+    function loadLayout() {
+        try {
+            const layout = JSON.parse(localStorage.coolerboxLayout || '{}');
+            const dropzones = document.querySelectorAll('.columns');
+            const layoutArray = Object.entries(layout).sort((a, b) => a[1].order - b[1].order);
+            
+            layoutArray.forEach(([elementId, state]) => {
+                const el = document.getElementById(elementId);
+                if (el && dropzones[state.zone]) {
+                    dropzones[state.zone].appendChild(el);
+                }
+            });
+        } catch (e) {
+            console.log("Could not load layout:", e);
+        }
+    }
+
     addStyle(document.head, `
+        /* ========================================
+           DRAG & DROP LAYOUT STYLING
+           ======================================== */
+        
+        /* Disable text selection during drag operations */
         .noSelect {
             user-select: none;
             -webkit-user-select: none;
             -ms-user-select: none;
         }
+
+        /* Prevent link interactions during drag mode */
         .noLinks a {
             pointer-events: none;
         }
+
+        /* Drop zone containers for layout management */
         .columns {
             height: 100% !important;
+            position: relative;
+        }
+
+        /* Disable transitions while dragging for smooth movement */
+        .component-container {
+            transition: none !important;
         }
     `);
 
@@ -47,23 +93,32 @@ function addStyle(head, css) {
     });
 
     function startDrag(e) {
-        if (!dragEnabled) return;
+        if (!dragEnabled || draggedElement !== null) return;
 
         const el = e.currentTarget;
+        draggedElement = el;
         let currentZone = el.parentElement;
 
+        // Store original dimensions before making absolute
+        const rect = el.getBoundingClientRect();
+        const width = rect.width;
+        const height = rect.height;
+
+        // Make element absolutely positioned for dragging
         el.style.position = 'absolute';
         el.style.zIndex = 9999;
+        el.style.width = width + 'px';
+        el.style.height = height + 'px';
 
-        const rect = el.getBoundingClientRect();
         let shiftX = e.clientX - rect.left;
         let shiftY = e.clientY - rect.top;
 
         el.setPointerCapture(e.pointerId);
 
         function moveAt(ev) {
-            if (!dragEnabled) return;
+            if (!dragEnabled || draggedElement === null) return;
 
+            // Find the zone under the cursor
             let targetZone = [...dropzones].find(zone => {
                 const r = zone.getBoundingClientRect();
                 return ev.clientX >= r.left &&
@@ -74,38 +129,50 @@ function addStyle(head, css) {
 
             if (targetZone && targetZone !== currentZone) {
                 currentZone = targetZone;
-                targetZone.appendChild(el);
+                currentZone.appendChild(el);
             }
 
-            const zoneRect = currentZone.getBoundingClientRect();
-            let x = ev.clientX - zoneRect.left - shiftX;
-            let y = ev.clientY - zoneRect.top - shiftY;
-
-            x = Math.max(0, Math.min(x, zoneRect.width - el.offsetWidth));
-            y = Math.max(0, Math.min(y, zoneRect.height - el.offsetHeight));
+            // Position relative to viewport, not the zone
+            let x = ev.clientX - shiftX;
+            let y = ev.clientY - shiftY;
 
             el.style.left = x + 'px';
             el.style.top = y + 'px';
         }
 
         function stopDrag(ev) {
-            el.removeEventListener('pointermove', moveAt);
-            el.removeEventListener('pointerup', stopDrag);
-            el.releasePointerCapture(ev.pointerId);
+            // Clean up event listeners
+            document.removeEventListener('pointermove', moveAt);
+            document.removeEventListener('pointerup', stopDrag);
+            
+            try {
+                el.releasePointerCapture(ev.pointerId);
+            } catch (e) {
+                console.log("Error releasing pointer capture:", e);
+            }
 
+            // Return to static positioning so element flows naturally in its zone
             el.style.position = 'static';
             el.style.left = '';
             el.style.top = '';
+            el.style.width = '';
+            el.style.height = '';
             el.style.zIndex = '';
+
+            draggedElement = null;
+            
+            // Save the layout
+            saveLayout();
         }
 
-        el.addEventListener('pointermove', moveAt);
-        el.addEventListener('pointerup', stopDrag);
+        document.addEventListener('pointermove', moveAt);
+        document.addEventListener('pointerup', stopDrag);
     }
 
-    
+    // Load saved layout when page loads
+    loadLayout();
+
     var main = document.querySelector("main") || document.body;
-    var head = document.head || document.getElementsByTagName("head")[0];
 
     const editButton = document.createElement("button");
     editButton.textContent = "Edit";
@@ -119,102 +186,18 @@ function addStyle(head, css) {
     editButton.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.1)";
     main.appendChild(editButton);
 
-    editDialog = document.createElement("dialog");
-    editDialog.innerHTML = `
-    <div style="padding: 20px;">
-        <div style="display: flex; align-items: center; margin-bottom: 10px;">
-            <h2 style="margin: 0; padding-right: 30px;">Edit</h2>
-            <button id="closeEditDialog" style="margin-left: auto;">Close</button>
-        </div>
-        <div style="display: flex; align-items: center;">
-            <h3 style="margin: 0; padding-right: 25px;">Themes</h3>
-            <button id="changeThemeButton" style="margin-left: auto;">Change Theme</button>
-        </div>
-    </div>
-    `;
-    editDialog.style.border = "1px solid var(--foreground-color)";
-    editDialog.style.borderRadius = "5px";
-    editDialog.style.boxShadow = "0 8px 10px rgba(0, 0, 0, 0.2)";
-    editDialog.style.position = "fixed";
-    editDialog.style.bottom = "25px";
-    editDialog.style.transform = "translate(25px, 0)";
-    editDialog.style.zIndex = "100";
-    editDialog.style.backgroundColor = "var(--body-background)";
-    editDialog.style.color = "var(--body-foreground)";
-    main.appendChild(editDialog);
-
-    const themeDialog = document.createElement("dialog");
-    themeDialog.innerHTML = `
-    <div style="padding: 20px;">
-        <h2>Select a Theme</h2>
-        <h3>Presets</h3>
-        <select id="themeSelect">
-            <optgroup label="Default Themes">
-                <option value="light">Light</option>
-                <option value="dark">Dark</option>
-                <option value="blue">Blue/Mocha</option>
-            </optgroup>
-            <optgroup label="Fun Themes">
-                <option value="banana">BANANA</option>
-                <option value="rainbow">Rainbow</option>
-            </optgroup>
-            <optgroup label="Color Themes">
-                <option value="ocean">Ocean</option>
-                <option value="forest">Forest</option>
-                <option value="neon">Neon</option>
-                <option value="pastel">Pastel</option>
-            </optgroup>
-            <optgroup label="Aesthetic Themes">
-                <option value="monochrome">Monochrome</option>
-                <option value="minimalist">Minimalist</option>
-                <option value="cyberpunk">Cyberpunk</option>
-            </optgroup>
-        </select>
-        <button id="closeThemeDialog" style="position: absolute; top: 10px; right: 10px;">Close</button>
-    </div>
-    `;
-    themeDialog.style.border = "1px solid var(--foreground-color)";
-    themeDialog.style.borderRadius = "5px";
-    themeDialog.style.boxShadow = "0 8px 10px rgba(0, 0, 0, 0.2)";
-    themeDialog.style.minWidth = "300px";
-    themeDialog.style.position = "fixed";
-    themeDialog.style.top = "50%";
-    themeDialog.style.left = "50%";
-    themeDialog.style.transform = "translate(-50%, -50%)";
-    themeDialog.style.zIndex = "100";
-    themeDialog.style.backgroundColor = "var(--body-background)";
-    themeDialog.style.color = "var(--body-foreground)";
-    document.body.appendChild(themeDialog);
-
-    if (localStorage.coolerboxTheme) {
-        themeDialog.querySelector("#themeSelect").value = localStorage.coolerboxTheme;
-    }
-
-    editDialog.querySelector("#closeEditDialog").addEventListener("click", () => {
-        editDialog.close();
-        disableDrag();
-    });
-
-    editDialog.querySelector("#changeThemeButton").addEventListener("click", () => {
-        themeDialog.showModal();
-    });
-
-    themeDialog.querySelector("#closeThemeDialog").addEventListener("click", () => {
-        themeDialog.close();
-    });
-
-    themeDialog.querySelector("#themeSelect").addEventListener("change", (event) => {
-        var theme = event.target.value;
-        localStorage.coolerboxTheme = theme;
-        var event = new CustomEvent("new_theme", {
-            detail: {
-                theme: theme,
-            },
-            bubbles: true, // Allows the event to bubble up the DOM tree (default: false)
-            cancelable: true // Allows the default action to be prevented (default: false)
-        });
-
-        document.dispatchEvent(event);
+    // Setup theme switcher using shared utilities
+    const { editDialog } = setupThemeSwitcher({
+        storageKey: 'coolerboxTheme',
+        defaultTheme: 'light',
+        container: main,
+        editDialogStyles: {
+            border: "1px solid var(--foreground-color)",
+            bottom: "25px",
+            transform: "translate(25px, 0)",
+            backgroundColor: "var(--body-background)"
+        },
+        onDialogClose: disableDrag
     });
 
     editButton.addEventListener("click", () => {
