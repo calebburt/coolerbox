@@ -272,6 +272,18 @@ const themes = {
     }
 };
 
+// Style theme definitions
+const styleThemes = {
+    colorNavbar: `
+        nav, .logo-wrapper {
+            background-color: var(--background-color) !important;
+        }
+    `,
+    roundedCorners: `
+        
+    `
+};
+
 // Apply a theme to the document
 function applyTheme(themeName) {
     const themeVars = themes[themeName];
@@ -297,6 +309,31 @@ function initializeTheme(storageKey, defaultTheme = 'light') {
         localStorage.setItem(storageKey, themeName);
         applyTheme(themeName);
     });
+}
+
+// Create style theme element
+function createStyleThemeElement(themeName) {
+    const style = document.createElement("style");
+    style.id = `style-theme-${themeName}`;
+    style.textContent = styleThemes[themeName];
+    return style;
+}
+
+// Apply a style theme
+function applyStyleTheme(themeName) {
+    let styleElement = document.getElementById(`style-theme-${themeName}`);
+    if (!styleElement) {
+        styleElement = createStyleThemeElement(themeName);
+        document.head.appendChild(styleElement);
+    }
+}
+
+// Remove a style theme
+function removeStyleTheme(themeName) {
+    const styleElement = document.getElementById(`style-theme-${themeName}`);
+    if (styleElement) {
+        styleElement.remove();
+    }
 }
 
 // Create theme selector dialog
@@ -329,6 +366,10 @@ function createThemeDialog(storageKey, styles = {}) {
             </optgroup>
         </select>
         <h2>Style Themes</h2>
+        <input type="checkbox" id="colorNavbar" name="colorNavbar">
+        <label for="colorNavbar">Color Navbar</label><br>
+        <input type="checkbox" id="roundedCorners" name="roundedCorners">
+        <label for="roundedCorners">Rounded Corners</label><br>
         
         <button id="closeThemeDialog" style="position: absolute; top: 10px; right: 10px;">Close</button>
     </div>
@@ -361,6 +402,23 @@ function createThemeDialog(storageKey, styles = {}) {
         themeDialog.querySelector("#themeSelect").value = localStorage.getItem(storageKey);
     }
 
+    // Load and apply saved style themes
+    const colorNavbarCheckbox = themeDialog.querySelector("#colorNavbar");
+    const roundedCornersCheckbox = themeDialog.querySelector("#roundedCorners");
+    
+    const colorNavbarState = localStorage.getItem("styleTheme_colorNavbar") === "true";
+    const roundedCornersState = localStorage.getItem("styleTheme_roundedCorners") === "true";
+    
+    colorNavbarCheckbox.checked = colorNavbarState;
+    roundedCornersCheckbox.checked = roundedCornersState;
+    
+    if (colorNavbarState) {
+        applyStyleTheme("colorNavbar");
+    }
+    if (roundedCornersState) {
+        applyStyleTheme("roundedCorners");
+    }
+
     themeDialog.querySelector("#closeThemeDialog").addEventListener("click", () => {
         themeDialog.close();
     });
@@ -372,6 +430,25 @@ function createThemeDialog(storageKey, styles = {}) {
             cancelable: true
         });
         document.dispatchEvent(customEvent);
+    });
+
+    // Handle style theme checkboxes
+    colorNavbarCheckbox.addEventListener("change", (event) => {
+        if (event.target.checked) {
+            applyStyleTheme("colorNavbar");
+        } else {
+            removeStyleTheme("colorNavbar");
+        }
+        localStorage.setItem("styleTheme_colorNavbar", event.target.checked);
+    });
+
+    roundedCornersCheckbox.addEventListener("change", (event) => {
+        if (event.target.checked) {
+            applyStyleTheme("roundedCorners");
+        } else {
+            removeStyleTheme("roundedCorners");
+        }
+        localStorage.setItem("styleTheme_roundedCorners", event.target.checked);
     });
 
     return themeDialog;

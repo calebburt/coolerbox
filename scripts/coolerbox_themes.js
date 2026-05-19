@@ -1,5 +1,3 @@
-
-
 var main = document.querySelector("main") || document.body;
 var head = document.head || document.getElementsByTagName("head")[0];
 
@@ -21,11 +19,19 @@ addStyle(head, `
        ======================================== */
     body,
     ul.tileList,
-    .component-action section {
+    .component-action *, div.content {
         background-color: var(--body-background) !important;
     }
 
-    ul.tileList {
+    .feed, .feed-column, section.activity-feed, .activity-feed blockquote, .feed .subheader, .feed-load-more {
+        background-color: var(--off-canvas-background) !important;
+    }
+
+    .feed * {
+        border-color: var(--body-background) !important;
+    }
+
+    ul.tileList, .activity-feed {
         margin: 0 !important;
     }
 
@@ -33,10 +39,14 @@ addStyle(head, `
         background-color: var(--background-color);
     }
 
+    .toast {
+        color: var(--body-foreground) !important;
+    }
+
     /* ========================================
        WIDGET & COMPONENT STYLING
        ======================================== */
-    .information-list li {
+    .information-list li, .action-list li, ul.grid li, .activity-list li {
         background-color: var(--widget-background-color);
     }
 
@@ -54,12 +64,18 @@ addStyle(head, `
     .flex-grade span:not(.grade span),
     .breadcrumb span,
     #lrn-assess,
-    .content span:not(.ck span),
-    p.filename {
+    .content span:not(.ck span):not(.grade span),
+    p.filename,
+    .profile-options li,
+    .profile-options li a {
         color: var(--body-foreground) !important;
     }
 
-    article div {
+    .component-container h2:not(.subheader) {
+        color: #222 !important;
+    }
+
+    article div, dl.profile {
         color: var(--foreground-color);
     }
 
@@ -74,6 +90,19 @@ addStyle(head, `
 
     select:hover {
         background-color: var(--widget-background-color);
+    }
+    
+    input[type="text"],
+    input[type="search"],
+    input[type="email"],
+    input[type="password"],
+    textarea {
+        background-color: var(--sbx-config-color-active);
+        color: var(--foreground-color) !important;
+    }
+
+    .action-list li:hover {
+        background-color: var(--off-canvas-hover) !important;
     }
 
     /* ========================================
