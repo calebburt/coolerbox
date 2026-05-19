@@ -67,6 +67,26 @@ const themes = {
         "--sbx-config-color-active": "#334",
         "--fc-page-bg-color": "#24243a",
     },
+    winter: {
+        "--background-color": "#eef3ff",
+        "--body-background": "var(--background-color)",
+        "--off-canvas-background": "#d5e5ff",
+        "--off-canvas-hover": "#b5ceff",
+        "--foreground-color": "#1d3a7a",
+        "--body-foreground": "var(--foreground-color)",
+        "--off-canvas-foreground-h": 0,
+        "--off-canvas-foreground-s": 0,
+        "--off-canvas-foreground-l": 0.13,
+        "--off-canvas-foreground-a": 3,
+        "--off-canvas-foreground": "var(--foreground-color)",
+        "--widget-background-color": "#d5e5ff",
+        "--content-ui-foreground": "hsla( 211.36, 48.35%, 35.69%, 1)",
+        "--content-ui-background": "#d5e5ff",
+        "--content-ui-hover": "hsla( 210.78, 50%, 45.98%, 1)",
+        "--sbx-color-foreground-primary": "#eef3ff",
+        "--sbx-config-color-active": "#b5ceff",
+        "--fc-page-bg-color": "#eef3ff",
+    },
     banana: {
         "--background-color": "#ffff00",
         "--body-background": "var(--background-color)",
@@ -230,8 +250,8 @@ const themes = {
     minimalist: {
         "--background-color": "#ffffff",
         "--body-background": "var(--background-color)",
-        "--off-canvas-background": "#f8f8f8",
-        "--off-canvas-hover": "#f0f0f0",
+        "--off-canvas-background": "#ffffff",
+        "--off-canvas-hover": "#ffffff",
         "--foreground-color": "#333333",
         "--body-foreground": "var(--foreground-color)",
         "--off-canvas-foreground-h": 0,
@@ -239,13 +259,13 @@ const themes = {
         "--off-canvas-foreground-l": 0.2,
         "--off-canvas-foreground-a": 3,
         "--off-canvas-foreground": "var(--foreground-color)",
-        "--widget-background-color": "#f8f8f8",
+        "--widget-background-color": "#ffffff",
         "--content-ui-foreground": "#333333",
-        "--content-ui-background": "#e8e8e8",
-        "--content-ui-hover": "#e0e0e0",
+        "--content-ui-background": "#ffffff",
+        "--content-ui-hover": "#ffffff",
         "--sbx-color-foreground-primary": "#ffffff",
-        "--sbx-config-color-active": "#f0f0f0",
-        "--fc-page-bg-color": "#f8f8f8",
+        "--sbx-config-color-active": "#ffffff",
+        "--fc-page-bg-color": "#ffffff",
     },
     cyberpunk: {
         "--background-color": "#0a0a0a",
@@ -347,7 +367,8 @@ function createThemeDialog(storageKey, styles = {}) {
             <optgroup label="Default Themes">
                 <option value="light">Light</option>
                 <option value="dark">Dark</option>
-                <option value="blue">Blue/Mocha</option>
+                <option value="blue">Mocha</option>
+                <option value="winter">Winter</option>
             </optgroup>
             <optgroup label="Fun Themes">
                 <option value="banana">BANANA</option>
