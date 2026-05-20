@@ -295,12 +295,34 @@ const themes = {
 // Style theme definitions
 const styleThemes = {
     colorNavbar: `
-        nav, .logo-wrapper {
-            background-color: var(--background-color) !important;
+        .logo-wrapper .logo, .tab-bar, .c-header-search .c-search-input__button {
+            background-color: var(--off-canvas-background) !important;
+            color: var(--body-foreground) !important;
         }
+            
+        .top-menu a:before, .top-menu a span {
+            color: var(--body-foreground) !important;
+        }
+
+        // .logo img {
+        //     background-color: var(--body-foreground); /* Fill color */
+  
+        //     /* Use the PNG as a mask */
+        //     -webkit-mask-image: url('/images/logo.php?logo=skin_logo_large&size=normal');
+        //     -webkit-mask-repeat: no-repeat;
+        //     -webkit-mask-position: center;
+        //     -webkit-mask-size: contain;
+
+        //     mask-image: url('/images/logo.php?logo=skin_logo_large&size=normal');
+        //     mask-repeat: no-repeat;
+        //     mask-position: center;
+        //     mask-size: contain;
+        // }
     `,
     roundedCorners: `
-        
+        .scrollable.show-for-medium-up, .information-list {
+            border-radius: 12px !important;
+        }
     `
 };
 
@@ -360,6 +382,27 @@ function removeStyleTheme(themeName) {
 function createThemeDialog(storageKey, styles = {}) {
     const themeDialog = document.createElement("dialog");
     themeDialog.innerHTML = `
+    <style>
+        #themeSelect,
+        label,
+        input[type="checkbox"] {
+            color: var(--body-foreground);
+        }
+        input[type="checkbox"] {
+            accent-color: var(--foreground-color) !important;
+            opacity: 1 !important;
+            width: 18px !important;
+            height: 18px !important;
+            position: relative !important;
+            z-index: 1 !important;
+        }
+        .theme-checkbox-label {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            color: var(--body-foreground);
+        }
+    </style>
     <div style="padding: 20px;">
         <h2>Select a Theme</h2>
         <h3>Presets</h3>
@@ -387,11 +430,8 @@ function createThemeDialog(storageKey, styles = {}) {
             </optgroup>
         </select>
         <h2>Style Themes</h2>
-        <input type="checkbox" id="colorNavbar" name="colorNavbar">
-        <label for="colorNavbar">Color Navbar</label><br>
-        <input type="checkbox" id="roundedCorners" name="roundedCorners">
-        <label for="roundedCorners">Rounded Corners</label><br>
-        
+        <label class="theme-checkbox-label"><input type="checkbox" id="colorNavbar" name="colorNavbar"><span>Color Navbar</span></label>
+        <label class="theme-checkbox-label"><input type="checkbox" id="roundedCorners" name="roundedCorners"><span>Rounded Corners</span></label>
         <button id="closeThemeDialog" style="position: absolute; top: 10px; right: 10px;">Close</button>
     </div>
     `;
