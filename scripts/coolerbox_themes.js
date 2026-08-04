@@ -1,6 +1,7 @@
 var main = document.querySelector("main") || document.body;
 var head = document.head || document.getElementsByTagName("head")[0];
 
+// Correction CSS
 addStyle(head, `
     /* ========================================
        NAVIGATION & SIDEBAR STYLING
@@ -140,3 +141,14 @@ addStyle(head, `
 
 // Initialize theme using shared utilities
 initializeTheme('coolerboxTheme', 'light');
+
+setTimeout(function() {addStyle(head, `
+    * {
+        transition:
+            color .35s ease-in,
+            background-color .35s ease-in,
+            border-radius .35s ease-in
+        !important;
+    }
+`)}, 1000)
+// Add transitions after initial load

@@ -320,8 +320,12 @@ const styleThemes = {
         // }
     `,
     roundedCorners: `
-        .scrollable.show-for-medium-up, .information-list {
+        .scrollable.show-for-medium-up, .information-list li, th, dl, .timetable-subject {
             border-radius: 12px !important;
+        }
+
+        .island section {
+            background-color: transparent !important;
         }
     `
 };
