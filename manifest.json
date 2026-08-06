@@ -7,7 +7,7 @@
     {
         "js": ["scripts/coolerbox.js"],
         "matches": [
-            "*://schoolbox.donvale.vic.edu.au/"
+            "*://schoolbox.donvale.vic.edu.au/*"
         ]
     },
     {

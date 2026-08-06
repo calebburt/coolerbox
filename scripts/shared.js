@@ -342,6 +342,17 @@ function applyTheme(themeName) {
 
 // Initialize theme from localStorage or default
 function initializeTheme(storageKey, defaultTheme = 'light') {
+    // Load and apply saved style themes
+    const colorNavbarState = localStorage.getItem("styleTheme_colorNavbar") === "true";
+    const roundedCornersState = localStorage.getItem("styleTheme_roundedCorners") === "true";
+
+    if (colorNavbarState) {
+        applyStyleTheme("colorNavbar");
+    }
+    if (roundedCornersState) {
+        applyStyleTheme("roundedCorners");
+    }
+
     if (localStorage.getItem(storageKey)) {
         const themeName = localStorage.getItem(storageKey);
         applyTheme(themeName);

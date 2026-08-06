@@ -68,7 +68,8 @@ addStyle(head, `
     .content span:not(.ck span):not(.grade span),
     p.filename,
     .profile-options li,
-    .profile-options li a {
+    .profile-options li a,
+    table tr th, table tr td {
         color: var(--body-foreground) !important;
     }
 
@@ -128,6 +129,9 @@ addStyle(head, `
 
     .timetable-subject a {
         color: hsla(211.36, 48.35%, 35.69%, 1) !important;
+    }
+    .timetable-subject div {
+        color: #222;
     }
 
     /* ========================================

@@ -3,15 +3,19 @@ let draggedElement = null;
 let layoutState = {};
 
 function enableDrag() {
-    dragEnabled = true;
-    document.body.classList.add('noSelect');
-    document.body.classList.add('noLinks');
+    if (window.location.pathname === "/") {
+        dragEnabled = true;
+        document.body.classList.add('noSelect');
+        document.body.classList.add('noLinks');
+    }
 }
 
 function disableDrag() {
-    dragEnabled = false;
-    document.body.classList.remove('noSelect');
-    document.body.classList.remove('noLinks');
+    if (window.location.pathname === "/") {
+        dragEnabled = false;
+        document.body.classList.remove('noSelect');
+        document.body.classList.remove('noLinks');
+    }
 }
 
 // Save layout to localStorage
@@ -167,17 +171,19 @@ loadLayout();
 
 var main = document.querySelector("main") || document.body;
 
-const editButton = document.createElement("button");
-editButton.textContent = "Edit";
-editButton.style.position = "fixed";
-editButton.style.top = "85px";
-editButton.style.right = "10px";
-editButton.style.zIndex = "999999";
-editButton.style.fontSize = "24px";
-editButton.style.padding = "10px 15px";
-editButton.style.borderRadius = "5px";
-editButton.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.1)";
-main.appendChild(editButton);
+const listItem = document.createElement("li");
+listItem.style.display = "list-item";
+
+const editButton = document.createElement("a");
+editButton.innerHTML = "<span>Edit</span>";
+// editButton.style.position = "fixed";
+// editButton.style.top = "72px";
+// editButton.style.right = "0px";
+// editButton.style.zIndex = "999999";
+// editButton.style.borderRadius = "5px";
+editButton.classList.add("icon-modify");
+// editButton.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.1)";
+document.querySelector("ul#top-menu").appendChild(listItem).appendChild(editButton);
 
 // Setup theme switcher using shared utilities
 const { editDialog } = setupThemeSwitcher({
