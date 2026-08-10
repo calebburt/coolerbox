@@ -453,9 +453,7 @@ function createThemeDialog(storageKey, styles = {}) {
     
     // Apply default styles
     const defaultStyles = {
-        border: "1px solid var(--foreground-color)",
-        borderRadius: "5px",
-        boxShadow: "0 8px 10px rgba(0, 0, 0, 0.2)",
+        border: "none",
         minWidth: "300px",
         position: "fixed",
         top: "50%",
@@ -548,14 +546,12 @@ function createEditDialog(config) {
     
     // Default styles
     const defaultStyles = {
-        border: "1px solid var(--foreground-color)",
-        borderRadius: "5px",
-        boxShadow: "0 8px 10px rgba(0, 0, 0, 0.2)",
         position: "fixed",
+        border: "none",
         bottom: "25px",
         transform: "translate(25px, 0)",
         zIndex: "100",
-        backgroundColor: "var(--body-background)",
+        backgroundColor: "var(--widget-background-color) !important",
         color: "var(--body-foreground)"
     };
     

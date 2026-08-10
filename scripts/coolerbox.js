@@ -173,15 +173,15 @@ var main = document.querySelector("main") || document.body;
 
 const listItem = document.createElement("li");
 listItem.style.display = "list-item";
-
 const editButton = document.createElement("a");
-editButton.innerHTML = "<span>Edit</span>";
+editButton.innerHTML = `<sbx-icon name="modify" size="1.30rem" color="currentColor" style="--v323da9c0: currentColor; --v03344a51: 1.30rem;"></sbx-icon><span>Edit</span>`;
 // editButton.style.position = "fixed";
 // editButton.style.top = "72px";
 // editButton.style.right = "0px";
 // editButton.style.zIndex = "999999";
 // editButton.style.borderRadius = "5px";
-editButton.classList.add("icon-modify");
+editButton.classList.add("sbx-button--has-icon");
+editButton.classList.add("u-width-100");
 // editButton.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.1)";
 document.querySelector("ul#top-menu").appendChild(listItem).appendChild(editButton);
 
@@ -191,10 +191,8 @@ const { editDialog } = setupThemeSwitcher({
     defaultTheme: 'light',
     container: main,
     editDialogStyles: {
-        border: "1px solid var(--foreground-color)",
         bottom: "25px",
-        transform: "translate(25px, 0)",
-        backgroundColor: "var(--body-background)"
+        transform: "translate(25px, 0)"
     },
     onDialogClose: disableDrag
 });

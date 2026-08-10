@@ -36,6 +36,10 @@ addStyle(head, `
         margin: 0 !important;
     }
 
+    .tileList li {
+        margin: 5px !important;
+    }
+
     .lrn {
         background-color: var(--background-color);
     }
@@ -69,7 +73,9 @@ addStyle(head, `
     p.filename,
     .profile-options li,
     .profile-options li a,
-    table tr th, table tr td {
+    table tr th, table tr td,
+    #msg-content p,
+    .information-list p {
         color: var(--body-foreground) !important;
     }
 
