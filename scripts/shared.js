@@ -292,6 +292,55 @@ const themes = {
     }
 };
 
+function generateTheme(baseRGB, mode = false) {
+    const { r, g, b } = baseRGB;
+
+    // Helpers
+    const rgb = (r, g, b) => `rgb(${r}, ${g}, ${b})`;
+    const clamp = (v) => Math.max(0, Math.min(255, v));
+    const adjust = (r, g, b, amt) => rgb(
+        clamp(r + amt),
+        clamp(g + amt),
+        clamp(b + amt)
+    );
+
+    const isLight = !mode;
+
+    // Derived colors
+    const background = isLight ? adjust(r, g, b, 80) : adjust(r, g, b, -80);
+    const offCanvas = isLight ? adjust(r, g, b, 40) : adjust(r, g, b, -40);
+    const offCanvasHover = isLight ? adjust(r, g, b, 20) : adjust(r, g, b, -20);
+    const foreground = isLight ? adjust(r, g, b, -120) : adjust(r, g, b, 150);
+    const widgetBackground = isLight ? adjust(r, g, b, 60) : adjust(r, g, b, -60);
+    const contentUIBackground = isLight ? adjust(r, g, b, 100) : adjust(r, g, b, -100);
+    const contentUIHover = isLight ? adjust(r, g, b, 80) : adjust(r, g, b, -80);
+    const contentUIForeground = foreground;
+
+    const sbxForegroundPrimary = offCanvas;
+    const sbxConfigActive = isLight ? adjust(r, g, b, 120) : adjust(r, g, b, -120);
+    const fcPageBg = background;
+
+    return {
+        "--background-color": background,
+        "--body-background": "var(--background-color)",
+        "--off-canvas-background": offCanvas,
+        "--off-canvas-hover": offCanvasHover,
+
+        "--foreground-color": foreground,
+        "--body-foreground": "var(--foreground-color)",
+
+        "--off-canvas-foreground": foreground,
+
+        "--widget-background-color": widgetBackground,
+        "--content-ui-foreground": contentUIForeground,
+        "--content-ui-background": contentUIBackground,
+        "--content-ui-hover": contentUIHover,
+        "--sbx-color-foreground-primary": sbxForegroundPrimary,
+        "--sbx-config-color-active": sbxConfigActive,
+        "--fc-page-bg-color": fcPageBg,
+    };
+}
+
 // Style theme definitions
 const styleThemes = {
     colorNavbar: `
@@ -330,11 +379,23 @@ const styleThemes = {
     `
 };
 
-// Apply a theme to the document
 function applyTheme(themeName) {
-    const themeVars = themes[themeName];
-    if (!themeVars) return;
-    
+    let themeVars;
+
+    // If it's a preset name, load from themes
+    if (themeName in themes) {
+        themeVars = themes[themeName];
+        if (!themeVars) return;
+    }
+    // Otherwise generate a theme from the value (legacy behavior)
+    else {
+        if (typeof themeName == "object")
+            themeVars = themeName;
+        else
+            themeVars = JSON.parse(themeName);
+    }
+
+    // Apply CSS variables
     for (const key in themeVars) {
         document.documentElement.style.setProperty(key, themeVars[key]);
     }
@@ -361,10 +422,16 @@ function initializeTheme(storageKey, defaultTheme = 'light') {
     }
     
     // Listen for custom theme events
-    document.addEventListener("new_theme", function(e) {
-        const themeName = e.detail.theme;
-        localStorage.setItem(storageKey, themeName);
-        applyTheme(themeName);
+    document.addEventListener("new_theme", (e) => {
+        if (e.detail.theme === "custom" && e.detail.themeObj) {
+            localStorage.setItem(storageKey, JSON.stringify(e.detail.themeObj));
+            applyTheme(e.detail.themeObj);
+            return;
+        }
+        localStorage.setItem(storageKey, e.detail.theme);
+
+        // Presets
+        applyTheme(themes[e.detail.theme]);
     });
 }
 
@@ -393,7 +460,6 @@ function removeStyleTheme(themeName) {
     }
 }
 
-// Create theme selector dialog
 function createThemeDialog(storageKey, styles = {}) {
     const themeDialog = document.createElement("dialog");
     themeDialog.innerHTML = `
@@ -418,8 +484,10 @@ function createThemeDialog(storageKey, styles = {}) {
             color: var(--body-foreground);
         }
     </style>
+
     <div style="padding: 20px;">
         <h2>Select a Theme</h2>
+
         <h3>Presets</h3>
         <select id="themeSelect">
             <optgroup label="Default Themes">
@@ -443,15 +511,25 @@ function createThemeDialog(storageKey, styles = {}) {
                 <option value="minimalist">Minimalist</option>
                 <option value="cyberpunk">Cyberpunk</option>
             </optgroup>
+
+            <option value="custom">Custom</option>
         </select>
+
+        <div id="customColorWrapper" style="margin-top: 15px; display: none;">
+            <label style="color: var(--body-foreground);">Pick a color:</label>
+            <input type="color" id="customColorPicker" value="#ff0000">
+            <label class="theme-checkbox-label"><input type="checkbox" id="darkMode"><span>Dark Theme?</span></label>
+        </div>
+
         <h2>Style Themes</h2>
-        <label class="theme-checkbox-label"><input type="checkbox" id="colorNavbar" name="colorNavbar"><span>Color Navbar</span></label>
-        <label class="theme-checkbox-label"><input type="checkbox" id="roundedCorners" name="roundedCorners"><span>Rounded Corners</span></label>
+        <label class="theme-checkbox-label"><input type="checkbox" id="colorNavbar"><span>Color Navbar</span></label>
+        <label class="theme-checkbox-label"><input type="checkbox" id="roundedCorners"><span>Rounded Corners</span></label>
+
         <button id="closeThemeDialog" style="position: absolute; top: 10px; right: 10px;">Close</button>
     </div>
     `;
-    
-    // Apply default styles
+
+    // Default dialog styles
     const defaultStyles = {
         border: "none",
         minWidth: "300px",
@@ -463,65 +541,100 @@ function createThemeDialog(storageKey, styles = {}) {
         backgroundColor: "var(--body-background)",
         color: "var(--body-foreground)"
     };
-    
-    // Merge with custom styles
-    const finalStyles = { ...defaultStyles, ...styles };
-    
-    // Apply all styles to dialog
-    Object.assign(themeDialog.style, finalStyles);
-    
+
+    Object.assign(themeDialog.style, { ...defaultStyles, ...styles });
     document.body.appendChild(themeDialog);
 
+    // Load saved theme
     if (localStorage.getItem(storageKey)) {
         themeDialog.querySelector("#themeSelect").value = localStorage.getItem(storageKey);
     }
 
-    // Load and apply saved style themes
+    // Load style theme states
     const colorNavbarCheckbox = themeDialog.querySelector("#colorNavbar");
     const roundedCornersCheckbox = themeDialog.querySelector("#roundedCorners");
-    
+
     const colorNavbarState = localStorage.getItem("styleTheme_colorNavbar") === "true";
     const roundedCornersState = localStorage.getItem("styleTheme_roundedCorners") === "true";
-    
+
     colorNavbarCheckbox.checked = colorNavbarState;
     roundedCornersCheckbox.checked = roundedCornersState;
-    
-    if (colorNavbarState) {
-        applyStyleTheme("colorNavbar");
-    }
-    if (roundedCornersState) {
-        applyStyleTheme("roundedCorners");
-    }
 
+    if (colorNavbarState) applyStyleTheme("colorNavbar");
+    if (roundedCornersState) applyStyleTheme("roundedCorners");
+
+    // Close button
     themeDialog.querySelector("#closeThemeDialog").addEventListener("click", () => {
         themeDialog.close();
     });
 
+    // Theme select handler
     themeDialog.querySelector("#themeSelect").addEventListener("change", (event) => {
+        const value = event.target.value;
+        const customWrapper = themeDialog.querySelector("#customColorWrapper");
+
+        customWrapper.style.display = value === "custom" ? "block" : "none";
+
         const customEvent = new CustomEvent("new_theme", {
-            detail: { theme: event.target.value },
+            detail: { theme: value },
             bubbles: true,
             cancelable: true
         });
+
         document.dispatchEvent(customEvent);
     });
 
-    // Handle style theme checkboxes
+    // Custom color picker → generate theme
+    themeDialog.querySelector("#customColorPicker").addEventListener("input", (event) => {
+        const hex = event.target.value;
+
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        const dark = themeDialog.querySelector("#darkMode").checked;
+
+        const themeObj = generateTheme({ r, g, b }, mode=dark);
+
+        const customEvent = new CustomEvent("new_theme", {
+            detail: { theme: "custom", rgb: { r, g, b }, themeObj },
+            bubbles: true,
+            cancelable: true
+        });
+
+        document.dispatchEvent(customEvent);
+    });
+
+    themeDialog.querySelector("#darkMode").addEventListener("input", (event) => {
+        const hex = themeDialog.querySelector("#customColorPicker").value;
+
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        const dark = event.target.checked;
+
+        const themeObj = generateTheme({ r, g, b }, mode=dark);
+
+        const customEvent = new CustomEvent("new_theme", {
+            detail: { theme: "custom", rgb: { r, g, b }, themeObj },
+            bubbles: true,
+            cancelable: true
+        });
+
+        document.dispatchEvent(customEvent);
+    })
+
+    // Style theme checkboxes
     colorNavbarCheckbox.addEventListener("change", (event) => {
-        if (event.target.checked) {
-            applyStyleTheme("colorNavbar");
-        } else {
-            removeStyleTheme("colorNavbar");
-        }
+        if (event.target.checked) applyStyleTheme("colorNavbar");
+        else removeStyleTheme("colorNavbar");
+
         localStorage.setItem("styleTheme_colorNavbar", event.target.checked);
     });
 
     roundedCornersCheckbox.addEventListener("change", (event) => {
-        if (event.target.checked) {
-            applyStyleTheme("roundedCorners");
-        } else {
-            removeStyleTheme("roundedCorners");
-        }
+        if (event.target.checked) applyStyleTheme("roundedCorners");
+        else removeStyleTheme("roundedCorners");
+
         localStorage.setItem("styleTheme_roundedCorners", event.target.checked);
     });
 
