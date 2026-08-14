@@ -148,11 +148,9 @@ document.body.appendChild(widgetsDraw);
         if (tag) {
             tag.textContent = minutesLeft;
         }
-
-        console.log("Minutes left in school day:", minutesLeft);
     }
 
-    setInterval(updateMinutesSchoolDay, 1000);
+    setInterval(updateMinutesSchoolDay, 10000);
     updateMinutesSchoolDay();
 
     // Verse counts (World English Bible)
