@@ -654,6 +654,7 @@ function createEditDialog(config) {
             <h3 style="margin: 0; padding-right: 25px;">Themes</h3>
             <button id="changeThemeButton" style="margin-left: auto;">Change Theme</button>
         </div>
+        ${config.custom || ""}
     </div>
     `;
     
@@ -682,7 +683,7 @@ function createEditDialog(config) {
 
 // Setup theme switching UI
 function setupThemeSwitcher(config) {
-    const { storageKey, container = document.body, editDialogStyles = {}, themeDialogStyles = {}, defaultTheme = 'light' } = config;
+    const { storageKey, container = document.body, editDialogStyles = {}, themeDialogStyles = {}, defaultTheme = 'light', customHTML = "" } = config;
     
     // Initialize theme
     initializeTheme(storageKey, defaultTheme);
@@ -690,7 +691,8 @@ function setupThemeSwitcher(config) {
     // Create dialogs
     const editDialog = createEditDialog({
         container,
-        styles: editDialogStyles
+        styles: editDialogStyles,
+        custom: customHTML
     });
     
     const themeDialog = createThemeDialog(storageKey, themeDialogStyles);

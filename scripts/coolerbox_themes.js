@@ -1,5 +1,5 @@
 var main = document.querySelector("main") || document.body;
-var head = document.head || document.getElementsByTagName("head")[0];
+var head = document.head || document.querySelector("head");
 
 // Correction CSS
 addStyle(head, `
@@ -34,10 +34,6 @@ addStyle(head, `
 
     ul.tileList, .activity-feed {
         margin: 0 !important;
-    }
-
-    .tileList li {
-        margin: 5px !important;
     }
 
     .lrn {

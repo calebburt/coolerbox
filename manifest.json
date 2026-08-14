@@ -16,19 +16,6 @@
             "*://schoolbox.donvale.vic.edu.au/*"
         ],
         "run_at": "document_end"
-    },
-    {
-        "js": ["scripts/coolermathspace.js"],
-        "matches": [
-            "*://*.mathspace.co/student/*"
-        ]
-    },
-    {
-        "js": ["scripts/shared.js", "scripts/coolermathspace_themes.js"],
-        "matches": [
-            "*://*.mathspace.co/*"
-        ],
-        "run_at": "document_end"
     }
   ]
 }
