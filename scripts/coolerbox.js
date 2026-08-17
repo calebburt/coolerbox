@@ -1,3 +1,5 @@
+if (window.location.href == "https://schoolbox.donvale.vic.edu.au/") {
+
 let dragEnabled = false;
 let draggedElement = null;
 let layoutState = {};
@@ -21,7 +23,7 @@ const customWidgets = [
     `,
     `
     <div id="coolerboxBibleVerse" class="component-container" style="color: var(--body-foreground)">
-        <span style="font-weight: bold;" id="bibleVerse"></span>
+        <span id="bibleVerse"></span>
     </div>
     `
 ];
@@ -473,6 +475,8 @@ function startDrag(e) {
 // Load saved layout when page loads
 loadLayout();
 
+}
+
 var main = document.querySelector("main") || document.body;
 
 const listItem = document.createElement("li");
@@ -492,18 +496,22 @@ const { editDialog } = setupThemeSwitcher({
         bottom: "25px",
         transform: "translate(25px, 0)"
     },
-    customHTML: `
+    customHTML: window.location.href == "https://schoolbox.donvale.vic.edu.au/" ? `
     <div style="display: flex; align-items: center;">
         <h3 style="margin: 0; padding-right: 25px;">Widgets</h3>
         <button id="widgetsButton" style="margin-left: auto;">Add Widgets</button>
     </div>
-    `,
-    onDialogClose: disableDrag
+    ` : "",
+    onDialogClose: window.location.href == "https://schoolbox.donvale.vic.edu.au/" ? disableDrag : () => {}
 });
+
+if (window.location.href == "https://schoolbox.donvale.vic.edu.au/") {
 
 editDialog.querySelector("#widgetsButton").addEventListener("click", () => {
     widgetsDraw.open = true;
 });
+
+}
 
 editButton.addEventListener("click", () => {
     editDialog.show();
