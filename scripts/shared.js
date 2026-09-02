@@ -1,3 +1,7 @@
+var meta_tag = document.createElement("meta");
+meta_tag.name = "theme-collor";
+document.head.appendChild(meta_tag);
+
 // Shared utility function
 function addStyle(head, css) {
     const style = document.createElement("style");
@@ -379,8 +383,9 @@ const styleThemes = {
     `
 };
 
+var themeVars = {};
+
 function applyTheme(themeName) {
-    let themeVars;
 
     // If it's a preset name, load from themes
     if (themeName in themes) {
@@ -399,6 +404,12 @@ function applyTheme(themeName) {
     for (const key in themeVars) {
         document.documentElement.style.setProperty(key, themeVars[key]);
     }
+    
+    const colorNavbarState = localStorage.getItem("styleTheme_colorNavbar") === "true";
+    if (colorNavbarState)
+        document.querySelector('meta[name="theme-color"]').setAttribute('content', themeVars["--off-canvas-background"]);
+    else
+        document.querySelector('meta[name="theme-color"]').setAttribute('content', "#2f5987");
 }
 
 // Initialize theme from localStorage or default
@@ -415,9 +426,12 @@ function initializeTheme(storageKey, defaultTheme = 'light') {
     }
 
     if (localStorage.getItem(storageKey)) {
+        console.log("Getting");
         const themeName = localStorage.getItem(storageKey);
         applyTheme(themeName);
     } else if (defaultTheme) {
+        console.log("Setting");
+        localStorage.setItem(storageKey, defaultTheme);
         applyTheme(defaultTheme);
     }
     
@@ -450,6 +464,9 @@ function applyStyleTheme(themeName) {
         styleElement = createStyleThemeElement(themeName);
         document.head.appendChild(styleElement);
     }
+    if (themeName == "colorNavbar") {
+        document.querySelector('meta[name="theme-color"]').setAttribute('content', themeVars["--off-canvas-background"]);
+    }
 }
 
 // Remove a style theme
@@ -457,6 +474,9 @@ function removeStyleTheme(themeName) {
     const styleElement = document.getElementById(`style-theme-${themeName}`);
     if (styleElement) {
         styleElement.remove();
+    }
+    if (themeName == "colorNavbar") {
+        document.querySelector('meta[name="theme-color"]').setAttribute('content', "#2f5987");
     }
 }
 
