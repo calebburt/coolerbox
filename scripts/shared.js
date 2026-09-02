@@ -426,9 +426,12 @@ function initializeTheme(storageKey, defaultTheme = 'light') {
     }
 
     if (localStorage.getItem(storageKey)) {
+        console.log("Getting");
         const themeName = localStorage.getItem(storageKey);
         applyTheme(themeName);
     } else if (defaultTheme) {
+        console.log("Setting");
+        localStorage.setItem(storageKey, defaultTheme);
         applyTheme(defaultTheme);
     }
     

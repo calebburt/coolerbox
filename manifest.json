@@ -16,6 +16,20 @@
             "*://schoolbox.donvale.vic.edu.au/*"
         ],
         "run_at": "document_end"
+    },
+    {
+        "js": ["scripts/shared.js", "scripts/coolerteams.js"],
+        "matches": [
+            "*://teams.cloud.microsoft/*"
+        ],
+        "run_at": "document_end"
+    },
+    {
+        "js": ["scripts/shared.js", "scripts/coolerteams_themes.js"],
+        "matches": [
+            "*://teams.cloud.microsoft/*"
+        ],
+        "run_at": "document_end"
     }
   ]
 }
