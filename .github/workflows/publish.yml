@@ -23,7 +23,7 @@ jobs:
 
       - name: Zip extension
 
-        run: zip -r ../extension.zip .
+        run: zip -r ./extension.zip .
 
       - name: Upload & Publish to Chrome Web Store
 
