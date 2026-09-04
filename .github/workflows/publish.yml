@@ -1,0 +1,42 @@
+name: Publish to Chrome Web Store
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed   # fires when the PR is closed
+
+jobs:
+
+  publish:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/checkout@v4
+
+      - name: Zip extension
+
+        run: zip -r ../extension.zip .
+
+      - name: Upload & Publish to Chrome Web Store
+
+        uses: mnao305/chrome-extension-upload@v5
+
+        with:
+
+          file-path: extension.zip
+
+          extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
+
+          client-id: ${{ secrets.CHROME_CLIENT_ID }}
+
+          client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
+
+          refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
