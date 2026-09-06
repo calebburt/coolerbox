@@ -49,7 +49,6 @@ const { editDialog } = setupThemeSwitcher({
     }
 });
 
-// Optional: what happens when clicked
 btn.addEventListener("click", () => {
     editDialog.show();
 });
