@@ -405,11 +405,13 @@ function applyTheme(themeName) {
         document.documentElement.style.setProperty(key, themeVars[key]);
     }
     
-    const colorNavbarState = localStorage.getItem("styleTheme_colorNavbar") === "true";
-    if (colorNavbarState)
-        document.querySelector('meta[name="theme-color"]').setAttribute('content', themeVars["--off-canvas-background"]);
-    else
-        document.querySelector('meta[name="theme-color"]').setAttribute('content', "#2f5987");
+    if (window.location.hostname == "schoolbox.donvale.vic.edu.au") {
+        const colorNavbarState = localStorage.getItem("styleTheme_colorNavbar") === "true";
+        if (colorNavbarState)
+            document.querySelector('meta[name="theme-color"]').setAttribute('content', themeVars["--off-canvas-background"]);
+        else
+            document.querySelector('meta[name="theme-color"]').setAttribute('content', "#2f5987");
+    }
 }
 
 // Initialize theme from localStorage or default
@@ -464,7 +466,7 @@ function applyStyleTheme(themeName) {
         styleElement = createStyleThemeElement(themeName);
         document.head.appendChild(styleElement);
     }
-    if (themeName == "colorNavbar") {
+    if (themeName == "colorNavbar" && window.location.hostname == "schoolbox.donvale.vic.edu.au") {
         document.querySelector('meta[name="theme-color"]').setAttribute('content', themeVars["--off-canvas-background"]);
     }
 }
