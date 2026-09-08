@@ -35,13 +35,13 @@ var btn = document.createElement("button");
 btn.textContent = "Edit";
 btn.style.position = "fixed";
 btn.style.top = "650px";
-btn.style.left = "15px";
+btn.style.left = "10px";
 document.body.appendChild(btn);
 
 // Setup theme switcher using shared utilities
 const { editDialog } = setupThemeSwitcher({
-    storageKey: 'coolerteamsTheme',
-    defaultTheme: 'dark',
+    storageKey: 'coolerlookTheme',
+    defaultTheme: 'light',
     container: main,
     editDialogStyles: {
         bottom: "25px",

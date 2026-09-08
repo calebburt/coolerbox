@@ -506,11 +506,9 @@ const { editDialog } = setupThemeSwitcher({
 });
 
 if (window.location.href == "https://schoolbox.donvale.vic.edu.au/") {
-
-editDialog.querySelector("#widgetsButton").addEventListener("click", () => {
-    widgetsDraw.open = true;
-});
-
+    editDialog.querySelector("#widgetsButton").addEventListener("click", () => {
+        widgetsDraw.open = true;
+    });
 }
 
 editButton.addEventListener("click", () => {
