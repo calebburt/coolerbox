@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "DCC Utils",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Adds various improvements for websites used by DCC.",
   "content_scripts": [
     {
