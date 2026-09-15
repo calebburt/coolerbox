@@ -4,6 +4,8 @@ let dragEnabled = false;
 let draggedElement = null;
 let layoutState = {};
 
+var day;
+
 const customWidgets = [
     `<div id="coolerboxIsGreat" class="component-container"><h1>Coolerbox is great!</h1></div>`,
     `
@@ -59,7 +61,7 @@ document.body.appendChild(widgetsDraw);
 
     function updateMinutesLeft() {
         var now = new Date();
-        var day = now.getDay(); // 1 = Monday, 2–5 = Tue–Fri
+        day = now.getDay(); // 1 = Monday, 2–5 = Tue–Fri
 
         // Monday schedule
         var mondayEnds = [
@@ -261,71 +263,84 @@ document.body.appendChild(widgetsDraw);
         .catch(err => console.log("Verse fetch error:", err));
 
 
+let layoutKey = day === 0 || day === 6 ? "coolerboxLayoutWeekend" : "coolerboxLayoutWeekdays";
+
 function enableDrag() {
     if (window.location.pathname === "/") {
         dragEnabled = true;
-        document.body.classList.add('noSelect');
-        document.body.classList.add('noLinks');
+        document.body.classList.add("noSelect", "noLinks");
     }
 }
 
 function disableDrag() {
     if (window.location.pathname === "/") {
         dragEnabled = false;
-        document.body.classList.remove('noSelect');
-        document.body.classList.remove('noLinks');
+        document.body.classList.remove("noSelect", "noLinks");
     }
 }
 
 function saveLayout() {
-    const zones = [...document.querySelectorAll('.columns')];
-    const layout = {};
+    const zones = [...document.querySelectorAll(".columns")];
+
+    // Load existing layout so we can preserve entries for missing items
+    const existingLayout = JSON.parse(
+        localStorage.getItem(layoutKey) || "{}"
+    );
+
+    const layout = { ...existingLayout };
 
     zones.forEach((zone, zoneIndex) => {
-        [...zone.children]
-            .filter(el => el.classList.contains('component-container'))
-            .forEach((el, order) => {
-                if (!el.id) return;
+        [...zone.querySelectorAll(".component-container")].forEach((el, order) => {
+            if (!el.id) return;
 
-                layout[el.id] = {
-                    zone: zoneIndex,
-                    order
-                };
-            });
+            // Update or create entry for items that currently exist
+            layout[el.id] = {
+                zone: zoneIndex,
+                order
+            };
+        });
     });
 
-    localStorage.setItem(
-        'coolerboxLayout',
-        JSON.stringify(layout)
-    );
+    // IMPORTANT: we do NOT delete keys for items that are not in the DOM.
+    // They stay in `layout` and thus persist across saves.
+
+    localStorage.setItem(layoutKey, JSON.stringify(layout));
 }
 
 function loadLayout() {
     try {
         const layout = JSON.parse(
-            localStorage.getItem('coolerboxLayout') || '{}'
+            localStorage.getItem(layoutKey) || "{}"
         );
 
-        const zones = [...document.querySelectorAll('.columns')];
+        // If layout is empty, do nothing — leave page as-is
+        if (!layout || Object.keys(layout).length === 0) {
+            return;
+        }
 
+        const zones = [...document.querySelectorAll(".columns")];
+
+        // Only move elements that are referenced in the layout.
+        // Everything else stays exactly where it is.
         Object.entries(layout)
             .sort((a, b) => {
                 if (a[1].zone !== b[1].zone) {
                     return a[1].zone - b[1].zone;
                 }
-
                 return a[1].order - b[1].order;
             })
             .forEach(([id, state]) => {
                 const el = document.getElementById(id);
+                const zone = zones[state.zone];
 
-                if (!el) return;
-                if (!zones[state.zone]) return;
+                // If element or zone doesn't exist, skip.
+                // The layout entry still remains in localStorage.
+                if (!el || !zone) return;
 
-                zones[state.zone].appendChild(el);
+                zone.appendChild(el);
             });
     } catch (err) {
-        console.error(err);
+        console.error("Failed to load layout:", err);
     }
 }
 
